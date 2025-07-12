@@ -24,9 +24,8 @@ All powered by OpenAI, FastAPI, React, Redux Toolkit, and RTK Query.
 | Frontend   | React, TypeScript, Tailwind, shadcn/ui |
 | Extension  | Vite, React, Manifest v3               |
 | State Mgmt | Redux Toolkit, RTK Query               |
-| Backend    | FastAPI, OpenAI API                    |
-| Storage    | PostgreSQL (via SQLAlchemy or Prisma)  |
-| Deployment | Vercel (Dashboard) + TBD for backend   |
+| Backend    | Nest (TypeScript), OpenAI API          |
+| Storage    | PostgreSQL (via Prisma)                |
 
 ---
 
@@ -41,26 +40,12 @@ All powered by OpenAI, FastAPI, React, Redux Toolkit, and RTK Query.
 
 ---
 
-## 🧪 Project Structure
-
-\`\`\`
-laterly.ai/
-├── extension/ # Chrome extension source
-├── dashboard/ # Web dashboard (React + Redux)
-├── backend/ # FastAPI server (optional subdir)
-├── shared/ # Shared types/utils (optional)
-├── .github/ # Workflows and issue templates
-\`\`\`
-
----
-
 ## 📦 Setup Instructions
 
 ### 🧰 Prerequisites
 
 - Node.js (v20 recommended)
-- NPM or PNPM
-- Python 3.10+ (for FastAPI backend)
+- NPM
 - Chrome (to load the extension)
 
 ### 🛠️ Install all packages
