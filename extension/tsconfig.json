@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["DOM", "ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["chrome", "node"],
+    "allowJs": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["src", "vite.config.ts"],
+  "exclude": ["node_modules"]
+}
