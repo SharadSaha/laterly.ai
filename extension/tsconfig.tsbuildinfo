@@ -1,1 +1,1 @@
-{"root":["./src/background.ts","./src/content.ts","./src/popup.tsx","./src/containers/auth/index.tsx","./src/containers/save-intent/index.tsx","./src/hooks/usechromestorage.ts","./vite.config.ts"],"version":"5.8.3"}
+{"root":["./src/background.ts","./src/content.ts","./src/popup.tsx","./src/containers/auth/index.tsx","./src/containers/save-intent/index.tsx","./src/hooks/usechromestorage.ts","./vite.config.ts","./vite-env.d.ts"],"version":"5.8.3"}
