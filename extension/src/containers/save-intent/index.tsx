@@ -5,6 +5,8 @@ const SaveIntentForm = () => {
   const [intent, setIntent] = useState<string>("");
   const [saveSatus, setSaveStatus] = useState<string>("");
 
+  const dashboardUrl = import.meta.env.VITE_DASHBOARD_URL;
+
   const handleSave = async () => {
     const [tab] = await chrome.tabs.query({
       active: true,
@@ -35,6 +37,13 @@ const SaveIntentForm = () => {
     );
   };
 
+  const handleNavigateToDashboard = (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    window.open(dashboardUrl, "_blank");
+  };
+
   return (
     <div className="popup">
       <h1 className="popup-title">ReadLater AI</h1>
@@ -52,7 +61,7 @@ const SaveIntentForm = () => {
 
       <a
         className="popup-link"
-        href="https://readlater.ai/dashboard"
+        onClick={handleNavigateToDashboard}
         target="_blank"
         rel="noopener noreferrer"
       >
