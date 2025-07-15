@@ -2,6 +2,8 @@ import ReactDOM from "react-dom/client";
 import useChromeStorage from "./hooks/useChromeStorage";
 import Auth from "./containers/auth";
 import SaveIntentForm from "./containers/save-intent";
+import { Provider } from "react-redux";
+import { store } from "./store";
 
 const Popup = () => {
   const [token, setToken, loading] = useChromeStorage<string | null>(
@@ -20,4 +22,8 @@ const Popup = () => {
   return <SaveIntentForm />;
 };
 
-ReactDOM.createRoot(document.getElementById("root")!).render(<Popup />);
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <Provider store={store}>
+    <Popup />
+  </Provider>
+);
