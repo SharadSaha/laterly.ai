@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AIService } from 'src/ai/service';
 import { normalizeIntent, normalizeTopic } from './utils/normalization';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ArticleService {
@@ -91,111 +92,53 @@ export class ArticleService {
     });
   }
 
-  async filterArticlesByTopics(
-    userId: string,
-    topicIds: string[],
-    filterMode: 'any' | 'all' | 'exact' | 'none' = 'any',
-  ) {
-    switch (filterMode) {
-      case 'any':
-        return this.prisma.article.findMany({
-          where: {
-            userId,
-            topics: {
-              some: {
-                id: { in: topicIds },
-              },
-            },
-          },
-          include: { topics: true },
-        });
+  async getArticles(userId: string, topicIds?: string[], rawIntent?: string) {
+    const where: Prisma.ArticleWhereInput = {
+      userId,
+    };
 
-      case 'all':
-        return this.prisma.article.findMany({
-          where: {
-            userId,
-            AND: topicIds.map((id) => ({
-              topics: {
-                some: { id },
-              },
-            })),
-          },
-          include: { topics: true },
-        });
-
-      case 'none':
-        return this.prisma.article.findMany({
-          where: {
-            userId,
-            NOT: {
-              topics: {
-                some: {
-                  id: { in: topicIds },
-                },
-              },
-            },
-          },
-          include: { topics: true },
-        });
-
-      case 'exact':
-        return this.prisma.article.findMany({
-          where: {
-            userId,
-            AND: [
-              {
-                topics: {
-                  every: {
-                    id: { in: topicIds },
-                  },
-                },
-              },
-              {
-                topics: {
-                  none: {
-                    id: { notIn: topicIds },
-                  },
-                },
-              },
-            ],
-          },
-          include: { topics: true },
-        });
-
-      default:
-        throw new Error('Invalid filter mode');
-    }
-  }
-
-  async filterArticlesByIntent(userId: string, rawIntent: string) {
-    const intentQuery = normalizeIntent(rawIntent);
-
-    const intents = await this.prisma.intent.findMany({
-      where: {
-        value: {
-          contains: intentQuery,
-          mode: 'insensitive',
+    if (topicIds?.length) {
+      where.topics = {
+        some: {
+          id: { in: topicIds },
         },
-      },
-      select: { id: true },
-    });
-
-    if (!intents.length) {
-      return [];
+      };
     }
 
-    const intentIds = intents.map((i) => i.id);
+    if (rawIntent?.trim()) {
+      const normalized = normalizeIntent(rawIntent);
+
+      const matchedIntents = await this.prisma.intent.findMany({
+        where: {
+          value: {
+            contains: normalized,
+            mode: 'insensitive',
+          },
+        },
+        select: { id: true },
+      });
+
+      const intentIds = matchedIntents.map((i) => i.id);
+
+      // If no match, return empty
+      if (intentIds.length === 0) return [];
+
+      where.intents = {
+        some: {
+          id: { in: intentIds },
+        },
+      };
+    }
 
     return this.prisma.article.findMany({
-      where: {
-        userId,
-        intents: {
-          some: {
-            id: { in: intentIds },
-          },
-        },
+      where,
+      include: {
+        topics: true,
+        intents: true,
       },
-      include: { intents: true, topics: true },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 }

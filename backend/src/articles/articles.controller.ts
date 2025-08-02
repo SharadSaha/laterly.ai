@@ -39,25 +39,16 @@ export class ArticlesController {
     return { message: 'Article marked as read' };
   }
 
-  @Get('filter-by-topics')
-  filterByTopics(
-    @Query() query: FilterArticlesDto,
+  @Get()
+  filterArticles(
+    @Query('topic_ids') topicIdsRaw: string,
+    @Query('intent') intentRaw: string,
     @Req() req: Express.Request,
   ) {
     const userId = req.user.sub;
-    return this.articlesService.filterArticlesByTopics(
-      userId,
-      query.topicIds,
-      query.filterMode || 'any',
-    );
-  }
 
-  @Get('filter-by-intent')
-  filterByIntent(
-    @Query('intent') rawIntent: string,
-    @Req() req: Express.Request,
-  ) {
-    const userId = req.user.sub;
-    return this.articlesService.filterArticlesByIntent(userId, rawIntent);
+    const topicIds = topicIdsRaw?.split(',').filter(Boolean);
+
+    return this.articlesService.getArticles(userId, topicIds, intentRaw);
   }
 }
