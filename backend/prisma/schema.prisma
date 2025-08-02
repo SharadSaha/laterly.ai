@@ -14,14 +14,30 @@ datasource db {
 }
 
 model Article {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   url       String
-  title     String
   content   String
+  title     String?
   summary   String?
-  intent    String?
-  topics    String[]
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+
+  topics    Topic[]   @relation("ArticleTopics")
+  intents   Intent[]  @relation("ArticleIntents")
+}
+
+model Topic {
+  id        String     @id @default(uuid())
+  value     String     @unique
+  articles  Article[]  @relation("ArticleTopics")
+}
+
+model Intent {
+  id        String     @id @default(uuid())
+  value     String     @unique
+  articles  Article[]  @relation("ArticleIntents")
 }
 
 model User {
@@ -29,4 +45,5 @@ model User {
   name String
   email String @unique
   password String
+  articles Article[]
 }
