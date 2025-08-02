@@ -10,6 +10,9 @@ export class CreateArticleDto {
   content: string;
 
   @IsString()
+  title: string;
+
+  @IsString()
   @IsNotEmpty()
   userId: string;
 }

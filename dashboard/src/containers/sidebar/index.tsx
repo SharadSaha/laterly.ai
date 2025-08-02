@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Filter, Search, Sparkles, StickyNote, Tags } from "lucide-react";
-import { cn } from "@/lib/utils"; // assuming you have a cn utility for classNames
+import { cn } from "@/lib/utils";
 
 type FilterType = "intent" | "summary" | "tags" | null;
 
@@ -28,7 +28,10 @@ const Sidebar = () => {
   return (
     <aside className="h-full w-64 border-r p-4 flex flex-col justify-between bg-muted/50">
       <div className="space-y-6">
-        <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">Laterly.ai<Sparkles className="w-5 h-5 text-primary" /></h1>
+        <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
+          Laterly.ai
+          <Sparkles className="w-5 h-5 text-primary" />
+        </h1>
 
         <div className="space-y-2">
           <p className="text-xs uppercase text-muted-foreground flex items-center gap-2 pb-2">
