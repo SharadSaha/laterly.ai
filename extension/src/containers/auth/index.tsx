@@ -10,14 +10,17 @@ const Auth = ({
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const [loginUser] = authApi.useLoginMutation();
+  const [loginUser, { isLoading: isLoginUserLoading }] =
+    authApi.useLoginMutation();
 
   const handleLogin = async () => {
-    loginUser({ email, password }).then((res) => {
-      if (res.data.token) {
-        onLoginSuccess(res.data.token);
-      }
-    });
+    loginUser({ email, password })
+      .unwrap()
+      .then((res) => {
+        if (res.token) {
+          onLoginSuccess(res.token);
+        }
+      });
   };
 
   return (
@@ -36,7 +39,9 @@ const Auth = ({
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <button onClick={handleLogin}>Log In</button>
+      <button onClick={handleLogin}>
+        {isLoginUserLoading ? "Logging in..." : "Log In"}
+      </button>
       <div className="footer-link">
         Not registered yet? Just enter your email to continue.
       </div>

@@ -5,10 +5,20 @@ export const baseQuery = () =>
   fetchBaseQuery({
     baseUrl,
     credentials: "include",
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem("token");
+    prepareHeaders: async (headers) => {
+      let token = localStorage.getItem("token");
+      const chromeToken: string | undefined = await new Promise((resolve) => {
+        chrome.storage.local.get(["token"], (result) => {
+          resolve(result?.token);
+        });
+      });
+
+      if (chromeToken) {
+        token = chromeToken;
+      }
+
       if (token) {
-        headers.set("Authorization", `${token}`);
+        headers.set("Authorization", `Bearer ${token}`);
       }
 
       return headers;

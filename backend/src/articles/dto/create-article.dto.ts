@@ -10,6 +10,10 @@ export class CreateArticleDto {
   content: string;
 
   @IsString()
+  @IsNotEmpty()
+  intent: string;
+
+  @IsString()
   title: string;
 
   @IsString()

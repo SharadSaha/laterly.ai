@@ -15,14 +15,15 @@ export class ArticleService {
     url: string;
     title: string;
     content: string;
+    intent: string;
     userId: string;
   }) {
-    const { url, title, content, userId } = data;
+    const { url, title, content, intent: intentData, userId } = data;
 
     const [summary, rawTopicNames, rawIntentPhrase] = await Promise.all([
       this.aiService.summarizeArticle(content),
       this.aiService.extractTopics(content),
-      this.aiService.detectUserIntent(content),
+      this.aiService.detectUserIntent(intentData),
     ]);
 
     const normalizedTopics = [

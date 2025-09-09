@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom/client";
 import useChromeStorage from "./hooks/useChromeStorage";
 import Auth from "./containers/auth";
-import SaveIntentForm from "./containers/save-intent";
+import SaveIntentForm from "./containers/save-article";
 import { Provider } from "react-redux";
 import { store } from "./store";
 

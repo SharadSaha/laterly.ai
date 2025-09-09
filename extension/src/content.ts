@@ -1,1 +1,1 @@
-console.log("ReadLater AI content script loaded");
+console.log("Laterly AI content script loaded");

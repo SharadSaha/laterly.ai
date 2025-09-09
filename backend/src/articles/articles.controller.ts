@@ -13,7 +13,6 @@ import {
 import { ArticleService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { JwtGuard } from 'src/auth/jwt/jwt.guard';
-import { FilterArticlesDto } from './dto/filter-articles.dto';
 
 @UseGuards(JwtGuard)
 @Controller('articles')

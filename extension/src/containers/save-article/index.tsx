@@ -1,11 +1,14 @@
 import { useState } from "react";
 import "./style.css";
+import articlesApi from "../../services/articles";
+
+const dashboardUrl = import.meta.env.VITE_DASHBOARD_URL;
 
 const SaveIntentForm = () => {
   const [intent, setIntent] = useState<string>("");
   const [saveSatus, setSaveStatus] = useState<string>("");
 
-  const dashboardUrl = import.meta.env.VITE_DASHBOARD_URL;
+  const [createArticle] = articlesApi.useCreateArticleMutation();
 
   const handleSave = async () => {
     const [tab] = await chrome.tabs.query({
@@ -27,12 +30,9 @@ const SaveIntentForm = () => {
           content,
           intent,
         };
-        await fetch("http://localhost:3000/api/save", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        setSaveStatus("✅ Saved!");
+        createArticle(payload)
+          .unwrap()
+          .then(() => setSaveStatus("✅ Saved!"));
       }
     );
   };
@@ -46,7 +46,7 @@ const SaveIntentForm = () => {
 
   return (
     <div className="popup">
-      <h1 className="popup-title">ReadLater AI</h1>
+      <h1 className="popup-title">Laterly AI</h1>
       <textarea
         className="popup-textarea"
         rows={3}
