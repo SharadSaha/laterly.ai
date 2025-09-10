@@ -20,8 +20,9 @@ export class ArticlesController {
   constructor(private readonly articlesService: ArticleService) {}
 
   @Post()
-  create(@Body() dto: CreateArticleDto) {
-    return this.articlesService.createArticle(dto);
+  create(@Body() dto: CreateArticleDto, @Req() req: Express.Request) {
+    const userId = req.user.sub;
+    return this.articlesService.createArticle(dto, userId);
   }
 
   @Delete(':id')

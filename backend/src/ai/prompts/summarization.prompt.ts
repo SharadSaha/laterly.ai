@@ -1,15 +1,5 @@
-import { ChatCompletionMessageParam } from 'openai/resources/index';
+export const getSummarizationPrompt = (content: string): string => `
+Summarize the following article in 3-4 sentences, focusing on the main ideas and insights:
 
-export const getSummarizationPrompt = (
-  article: string,
-): ChatCompletionMessageParam[] => [
-  {
-    role: 'system',
-    content:
-      'You are a helpful assistant. Summarize this article in 5 concise bullet points.',
-  },
-  {
-    role: 'user',
-    content: article,
-  },
-];
+"${content}"
+`;

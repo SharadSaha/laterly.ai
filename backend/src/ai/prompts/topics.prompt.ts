@@ -1,15 +1,5 @@
-import { ChatCompletionMessageParam } from 'openai/resources/index';
+export const getTopicsPrompt = (content: string): string => `
+Extract 3-5 key topics or tags from the following article. Return them as a comma-separated list:
 
-export const getTopicsPrompt = (
-  article: string,
-): ChatCompletionMessageParam[] => [
-  {
-    role: 'system',
-    content:
-      'Extract 3 to 5 lowercase, comma-separated topic tags (no hashtags) from this article to help categorize it.',
-  },
-  {
-    role: 'user',
-    content: article,
-  },
-];
+"${content}"
+`;

@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { AIService } from 'src/ai/service';
 import { normalizeIntent, normalizeTopic } from './utils/normalization';
 import { Prisma } from '@prisma/client';
+import { AIService } from 'src/ai/service';
 
 @Injectable()
 export class ArticleService {
@@ -11,14 +11,16 @@ export class ArticleService {
     private aiService: AIService,
   ) {}
 
-  async createArticle(data: {
-    url: string;
-    title: string;
-    content: string;
-    intent: string;
-    userId: string;
-  }) {
-    const { url, title, content, intent: intentData, userId } = data;
+  async createArticle(
+    data: {
+      url: string;
+      title: string;
+      content: string;
+      intent: string;
+    },
+    userId: string,
+  ) {
+    const { url, title, content, intent: intentData } = data;
 
     const [summary, rawTopicNames, rawIntentPhrase] = await Promise.all([
       this.aiService.summarizeArticle(content),
@@ -121,7 +123,6 @@ export class ArticleService {
 
       const intentIds = matchedIntents.map((i) => i.id);
 
-      // If no match, return empty
       if (intentIds.length === 0) return [];
 
       where.intents = {
