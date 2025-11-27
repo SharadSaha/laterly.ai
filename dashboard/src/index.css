@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  @apply bg-slate-950/5 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-body antialiased;
+  background-image: radial-gradient(circle at 10% 20%, rgba(75, 141, 255, 0.15), transparent 20%),
+    radial-gradient(circle at 90% 10%, rgba(16, 185, 129, 0.12), transparent 18%),
+    radial-gradient(circle at 30% 80%, rgba(79, 70, 229, 0.1), transparent 22%);
+  min-height: 100vh;
+}
+
+a {
+  @apply text-brand-700 dark:text-brand-300 hover:underline;
+}
+
+.card-hover {
+  @apply transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:shadow-xl;
+}
+
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 1rem;
+  padding: 1px;
+  background: linear-gradient(120deg, rgba(75, 141, 255, 0.35), rgba(16, 185, 129, 0.35));
+  -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.glass {
+  @apply bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-white/40 dark:border-slate-800;
+}
