@@ -2,18 +2,23 @@ import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { useLoginMutation, useMeQuery } from "../app/services/authApi";
+import { useLazyMeQuery, useLoginMutation } from "../app/services/authApi";
 import { useAppDispatch, useAppSelector } from "../app/store/hooks";
 import { setCredentials, setHydrated } from "../app/store";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { BookMarked } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [login, { isLoading }] = useLoginMutation();
-  const { refetch } = useMeQuery(undefined, { skip: true });
+  const [fetchMe] = useLazyMeQuery();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state) => state.auth);
@@ -29,14 +34,15 @@ const Login = () => {
     try {
       const res = await login({ email, password }).unwrap();
       dispatch(setHydrated(false));
-      dispatch(setCredentials({ user: null, accessToken: res.access_token ?? null }));
-      const me = await refetch();
-      if (me.data) {
-        dispatch(setCredentials({ user: me.data }));
-      }
+      dispatch(
+        setCredentials({ user: null, accessToken: res.access_token ?? null })
+      );
+      const me = await fetchMe().unwrap();
+      dispatch(setCredentials({ user: me }));
       toast.success("Welcome back");
       navigate("/");
     } catch (error) {
+      console.error(error);
       toast.error("Login failed. Check your credentials.");
     }
   };
@@ -48,13 +54,19 @@ const Login = () => {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-emerald-400 text-white shadow-lg">
             <BookMarked className="h-5 w-5" />
           </div>
-          <CardTitle className="text-2xl font-semibold">Sign in to Laterly</CardTitle>
-          <p className="text-sm text-slate-500">Secure login with your saved session cookie.</p>
+          <CardTitle className="text-2xl font-semibold">
+            Sign in to Laterly
+          </CardTitle>
+          <p className="text-sm text-slate-500">
+            Secure login with your saved session cookie.
+          </p>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Email</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                Email
+              </label>
               <Input
                 required
                 type="email"
@@ -65,7 +77,9 @@ const Login = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-200">Password</label>
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                Password
+              </label>
               <Input
                 required
                 type="password"
@@ -75,11 +89,17 @@ const Login = () => {
                 aria-label="Password"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading} aria-label="Login">
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isLoading}
+              aria-label="Login"
+            >
               {isLoading ? "Signing in…" : "Login"}
             </Button>
             <p className="text-xs text-center text-slate-500">
-              We respect your session cookie; if you're already logged in via the extension we'll pick it up automatically.
+              We respect your session cookie; if you're already logged in via
+              the extension we'll pick it up automatically.
             </p>
           </form>
         </CardContent>

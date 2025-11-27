@@ -33,4 +33,34 @@ export class AuthService {
     const payload = { sub: userId, email };
     return { access_token: this.jwt.sign(payload) };
   }
+
+  async getProfile(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        // createdAt might not exist in schema; fallback handled below.
+      },
+    });
+
+    const [total, unread] = await Promise.all([
+      this.prisma.article.count({ where: { userId } }),
+      this.prisma.article.count({ where: { userId, isRead: false } }),
+    ]);
+
+    return {
+      id: user?.id ?? userId,
+      email: user?.email ?? '',
+      name: user?.name ?? '',
+      joinedOn: (user as any)?.createdAt ?? null,
+      stats: {
+        total,
+        bookmarked: 0,
+        unread,
+        opened: total - unread,
+      },
+    };
+  }
 }

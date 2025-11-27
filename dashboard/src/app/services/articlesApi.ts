@@ -9,7 +9,7 @@ const withArticlePatches = (
   articleId: string,
   updater: (article: Article) => void,
   dispatch: any,
-  getState: () => RootState,
+  getState: () => RootState
 ) => {
   const patches: { undo?: () => void }[] = [];
   const state = getState();
@@ -21,11 +21,15 @@ const withArticlePatches = (
     if (endpointName === "getArticles" || endpointName === "filterArticles") {
       try {
         const patch = dispatch(
-          articlesApi.util.updateQueryData(endpointName, originalArgs, (draft: any) => {
-            const items: Article[] | undefined = draft?.items ?? draft;
-            const target = items?.find((a) => a.id === articleId);
-            if (target) updater(target);
-          }),
+          articlesApi.util.updateQueryData(
+            endpointName,
+            originalArgs,
+            (draft: any) => {
+              const items: Article[] | undefined = draft?.items ?? draft;
+              const target = items?.find((a) => a.id === articleId);
+              if (target) updater(target);
+            }
+          )
         );
         patches.push(patch as { undo?: () => void });
       } catch (error) {
@@ -38,7 +42,7 @@ const withArticlePatches = (
     const patch = dispatch(
       articlesApi.util.updateQueryData("getArticle", articleId, (draft) => {
         if (draft) updater(draft as Article);
-      }),
+      })
     );
     patches.push(patch as { undo?: () => void });
   } catch (error) {
@@ -53,14 +57,20 @@ export const articlesApi = createApi({
   baseQuery,
   tagTypes: ["Articles", "Article", "Topics", "UserStats"],
   endpoints: (builder) => ({
-    getArticles: builder.query<PaginatedResponse<Article>, { skip?: number; take?: number } | void>({
+    getArticles: builder.query<
+      PaginatedResponse<Article>,
+      { skip?: number; take?: number } | void
+    >({
       query: (params) => {
         const skip = params?.skip ?? 0;
         const take = params?.take ?? PAGE_SIZE;
         return `/api/articles${buildQueryString({ skip, take })}`;
       },
       providesTags: (result) => [
-        ...(result?.items?.map((article) => ({ type: "Article" as const, id: article.id })) ?? []),
+        ...(result?.items?.map((article) => ({
+          type: "Article" as const,
+          id: article.id,
+        })) ?? []),
         { type: "Articles", id: "LIST" },
         { type: "UserStats", id: "me" },
       ],
@@ -73,19 +83,31 @@ export const articlesApi = createApi({
         { type: "UserStats", id: "me" },
       ],
     }),
-    filterArticles: builder.query<PaginatedResponse<Article>, {
-      topicIds?: string[];
-      intent?: string;
-      skip?: number;
-      take?: number;
-      mode?: string;
-    }>({
+    filterArticles: builder.query<
+      PaginatedResponse<Article>,
+      {
+        topicIds?: string[];
+        intent?: string;
+        skip?: number;
+        take?: number;
+        mode?: string;
+      }
+    >({
       query: ({ topicIds, intent, skip = 0, take = PAGE_SIZE, mode }) => {
         const topic_ids = topicIds?.join(",");
-        return `/api/articles/filter${buildQueryString({ topic_ids, intent, skip, take, mode })}`;
+        return `/api/articles${buildQueryString({
+          topic_ids,
+          intent,
+          skip,
+          take,
+          mode,
+        })}`;
       },
       providesTags: (result) => [
-        ...(result?.items?.map((article) => ({ type: "Article" as const, id: article.id })) ?? []),
+        ...(result?.items?.map((article) => ({
+          type: "Article" as const,
+          id: article.id,
+        })) ?? []),
         { type: "Articles", id: "LIST" },
       ],
     }),
@@ -110,16 +132,23 @@ export const articlesApi = createApi({
 
         Object.values(queries).forEach((entry: any) => {
           const { endpointName, originalArgs } = entry ?? {};
-          if (endpointName === "getArticles" || endpointName === "filterArticles") {
+          if (
+            endpointName === "getArticles" ||
+            endpointName === "filterArticles"
+          ) {
             try {
               const patch = dispatch(
-                articlesApi.util.updateQueryData(endpointName, originalArgs, (draft: any) => {
-                  const items: Article[] | undefined = draft?.items ?? draft;
-                  if (Array.isArray(items)) {
-                    const idx = items.findIndex((a) => a.id === articleId);
-                    if (idx >= 0) items.splice(idx, 1);
+                articlesApi.util.updateQueryData(
+                  endpointName,
+                  originalArgs,
+                  (draft: any) => {
+                    const items: Article[] | undefined = draft?.items ?? draft;
+                    if (Array.isArray(items)) {
+                      const idx = items.findIndex((a) => a.id === articleId);
+                      if (idx >= 0) items.splice(idx, 1);
+                    }
                   }
-                }),
+                )
               );
               patches.push(patch as { undo?: () => void });
             } catch (error) {
@@ -148,7 +177,7 @@ export const articlesApi = createApi({
             article.isRead = !article.isRead;
           },
           dispatch,
-          getState,
+          getState
         );
         try {
           await queryFulfilled;
@@ -171,7 +200,7 @@ export const articlesApi = createApi({
             article.isBookmarked = !article.isBookmarked;
           },
           dispatch,
-          getState,
+          getState
         );
         try {
           await queryFulfilled;
@@ -181,7 +210,10 @@ export const articlesApi = createApi({
       },
     }),
     resummarize: builder.mutation<Article, string>({
-      query: (id) => ({ url: `/api/articles/${id}/resummarize`, method: "POST" }),
+      query: (id) => ({
+        url: `/api/articles/${id}/resummarize`,
+        method: "POST",
+      }),
       invalidatesTags: (result, error, id) => [
         { type: "Article", id },
         { type: "Articles", id: "LIST" },
@@ -193,7 +225,7 @@ export const articlesApi = createApi({
             article.summary = "Regenerating summary...";
           },
           dispatch,
-          getState,
+          getState
         );
         try {
           const { data } = await queryFulfilled;
@@ -203,7 +235,7 @@ export const articlesApi = createApi({
               article.summary = data.summary;
             },
             dispatch,
-            getState,
+            getState
           );
           // no rollback needed on success patch
           applyResult.forEach(() => null);

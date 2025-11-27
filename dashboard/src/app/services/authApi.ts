@@ -30,4 +30,4 @@ export const authApi = createApi({
   }),
 });
 
-export const { useLoginMutation, useLogoutMutation, useMeQuery } = authApi;
+export const { useLoginMutation, useLogoutMutation, useMeQuery, useLazyMeQuery } = authApi;
