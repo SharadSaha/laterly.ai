@@ -17,7 +17,7 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-950/70 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b border-slate-100 bg-white backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-4">
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-emerald-400 text-white shadow-lg">

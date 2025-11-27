@@ -37,7 +37,7 @@ const ProfileDropdown = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 px-2 py-1 pr-3 shadow-sm hover:shadow"
+          className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2 py-1 pr-3 shadow-sm hover:shadow"
           aria-label="Profile menu"
         >
           <Avatar className="h-9 w-9">

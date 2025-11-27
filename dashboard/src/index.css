@@ -3,19 +3,20 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
 body {
-  @apply bg-slate-950/5 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-body antialiased;
-  background-image: radial-gradient(circle at 10% 20%, rgba(75, 141, 255, 0.15), transparent 20%),
-    radial-gradient(circle at 90% 10%, rgba(16, 185, 129, 0.12), transparent 18%),
-    radial-gradient(circle at 30% 80%, rgba(79, 70, 229, 0.1), transparent 22%);
+  @apply bg-slate-50 text-slate-900 font-body antialiased;
+  background-image: radial-gradient(circle at 10% 20%, rgba(75, 141, 255, 0.22), transparent 18%),
+    radial-gradient(circle at 90% 10%, rgba(16, 185, 129, 0.18), transparent 16%),
+    radial-gradient(circle at 40% 70%, rgba(79, 70, 229, 0.12), transparent 20%);
+  background-color: #f8fbff;
   min-height: 100vh;
 }
 
 a {
-  @apply text-brand-700 dark:text-brand-300 hover:underline;
+  @apply text-brand-700 hover:text-brand-800 hover:underline;
 }
 
 .card-hover {
@@ -40,5 +41,5 @@ a {
 }
 
 .glass {
-  @apply bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-white/40 dark:border-slate-800;
+  @apply bg-white border border-white/60 backdrop-blur-xl shadow-lg;
 }

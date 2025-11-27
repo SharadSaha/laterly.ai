@@ -55,7 +55,7 @@ const StatsCards = ({ opened = 0, bookmarked = 0, unread = 0 }: StatsCardsProps)
             transition={{ delay: idx * 0.05, duration: 0.4, ease: "easeOut" }}
             className="gradient-border rounded-2xl"
           >
-            <div className="relative overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 p-4 shadow-sm">
+            <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-4 shadow-md">
               <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-70`} />
               <div className="relative flex items-center justify-between">
                 <div>
