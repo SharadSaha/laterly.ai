@@ -130,7 +130,12 @@ export class ArticleService {
       rawIntent,
       skip = 0,
       take = 20,
-    }: { topicIds?: string[]; rawIntent?: string; skip?: number; take?: number },
+    }: {
+      topicIds?: string[];
+      rawIntent?: string;
+      skip?: number;
+      take?: number;
+    },
   ) {
     const where: Prisma.ArticleWhereInput = {
       userId,
@@ -146,28 +151,40 @@ export class ArticleService {
 
     if (rawIntent?.trim()) {
       const normalized = normalizeIntent(rawIntent);
+      const tokens = normalized.split(/\s+/).filter((t) => t.length > 2);
 
       const matchedIntents = await this.prisma.intent.findMany({
         where: {
-          value: {
-            contains: normalized,
-            mode: 'insensitive',
-          },
+          OR: [
+            { value: { contains: normalized, mode: Prisma.QueryMode.insensitive } },
+            ...tokens.map((token) => ({
+              value: { contains: token, mode: Prisma.QueryMode.insensitive },
+            })),
+          ],
         },
         select: { id: true },
       });
 
       const intentIds = matchedIntents.map((i) => i.id);
 
-      if (intentIds.length === 0) {
-        return { items: [], total: 0 };
-      }
-
-      where.intents = {
-        some: {
-          id: { in: intentIds },
+      where.AND = [
+        {
+          OR: [
+            intentIds.length
+              ? {
+                  intents: {
+                    some: {
+                      id: { in: intentIds },
+                    },
+                  },
+                }
+              : undefined,
+            { title: { contains: rawIntent, mode: Prisma.QueryMode.insensitive } },
+            { summary: { contains: rawIntent, mode: Prisma.QueryMode.insensitive } },
+            { content: { contains: rawIntent, mode: Prisma.QueryMode.insensitive } },
+          ].filter(Boolean) as Prisma.ArticleWhereInput[],
         },
-      };
+      ];
     }
 
     const [items, total] = await Promise.all([
