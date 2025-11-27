@@ -2,6 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQuery, buildQueryString } from "../../utils/api";
 import type { Article, Intent, PaginatedResponse, Topic } from "../../types";
 import type { RootState } from "../store";
+import { authApi } from "./authApi";
 
 const PAGE_SIZE = 20;
 
@@ -9,7 +10,7 @@ const withArticlePatches = (
   articleId: string,
   updater: (article: Article) => void,
   dispatch: any,
-  getState: () => RootState
+  getState: () => any,
 ) => {
   const patches: { undo?: () => void }[] = [];
   const state = getState();
@@ -158,6 +159,7 @@ export const articlesApi = createApi({
         });
         try {
           await queryFulfilled;
+          dispatch(authApi.util.invalidateTags([{ type: "UserStats", id: "me" }]));
         } catch (error) {
           patches.forEach((p) => p.undo?.());
         }
@@ -181,6 +183,7 @@ export const articlesApi = createApi({
         );
         try {
           await queryFulfilled;
+          dispatch(authApi.util.invalidateTags([{ type: "UserStats", id: "me" }]));
         } catch (error) {
           patches.forEach((p) => p.undo?.());
         }
@@ -204,6 +207,7 @@ export const articlesApi = createApi({
         );
         try {
           await queryFulfilled;
+          dispatch(authApi.util.invalidateTags([{ type: "UserStats", id: "me" }]));
         } catch (error) {
           patches.forEach((p) => p.undo?.());
         }
@@ -237,6 +241,7 @@ export const articlesApi = createApi({
             dispatch,
             getState
           );
+          dispatch(authApi.util.invalidateTags([{ type: "UserStats", id: "me" }]));
           // no rollback needed on success patch
           applyResult.forEach(() => null);
         } catch (error) {

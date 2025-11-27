@@ -80,7 +80,7 @@ export class ArticleService {
     await this.prisma.article.delete({ where: { id: articleId } });
   }
 
-  async markArticleAsRead(articleId: string, userId: string): Promise<void> {
+  async toggleReadState(articleId: string, userId: string) {
     const article = await this.prisma.article.findUnique({
       where: { id: articleId },
     });
@@ -89,9 +89,24 @@ export class ArticleService {
       throw new NotFoundException('Article not found or access denied');
     }
 
-    await this.prisma.article.update({
+    return this.prisma.article.update({
       where: { id: articleId },
-      data: { isRead: true },
+      data: { isRead: !article.isRead },
+    });
+  }
+
+  async toggleBookmark(articleId: string, userId: string) {
+    const article = await this.prisma.article.findUnique({
+      where: { id: articleId },
+    });
+
+    if (!article || article.userId !== userId) {
+      throw new NotFoundException('Article not found or access denied');
+    }
+
+    return this.prisma.article.update({
+      where: { id: articleId },
+      data: { isBookmarked: !article.isBookmarked },
     });
   }
 

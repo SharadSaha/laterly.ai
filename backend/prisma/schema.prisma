@@ -27,6 +27,7 @@ model Article {
   topics    Topic[]   @relation("ArticleTopics")
   intents   Intent[]  @relation("ArticleIntents")
   isRead    Boolean   @default(false)
+  isBookmarked Boolean @default(false)
 }
 
 model Topic {

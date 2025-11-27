@@ -45,9 +45,10 @@ export class AuthService {
       },
     });
 
-    const [total, unread] = await Promise.all([
+    const [total, unread, bookmarked] = await Promise.all([
       this.prisma.article.count({ where: { userId } }),
       this.prisma.article.count({ where: { userId, isRead: false } }),
+      this.prisma.article.count({ where: { userId, isBookmarked: true } }),
     ]);
 
     return {
@@ -57,7 +58,7 @@ export class AuthService {
       joinedOn: (user as any)?.createdAt ?? null,
       stats: {
         total,
-        bookmarked: 0,
+        bookmarked,
         unread,
         opened: total - unread,
       },

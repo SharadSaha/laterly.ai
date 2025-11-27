@@ -1,10 +1,31 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Bookmark, CheckCircle, ExternalLink, RefreshCw, Tags, Trash2 } from "lucide-react";
-import { useDeleteArticleMutation, useGetArticleQuery, useMarkReadMutation, useResummarizeMutation, useToggleBookmarkMutation } from "../app/services/articlesApi";
+import {
+  ArrowLeft,
+  Bookmark,
+  CheckCircle,
+  ExternalLink,
+  RefreshCw,
+  Tags,
+  Trash2,
+} from "lucide-react";
+import {
+  useDeleteArticleMutation,
+  useGetArticleQuery,
+  useMarkReadMutation,
+  useResummarizeMutation,
+  useToggleBookmarkMutation,
+  articlesApi,
+} from "../app/services/articlesApi";
+import { useAppDispatch } from "../app/store/hooks";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import ConfirmModal from "../components/ConfirmModal";
 import { formatDate } from "../utils/format";
 import { Skeleton } from "../components/ui/skeleton";
@@ -13,17 +34,31 @@ import { toast } from "sonner";
 const ArticleDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: article, isLoading } = useGetArticleQuery(id ?? "", { skip: !id });
+  const { data: article, isLoading } = useGetArticleQuery(id ?? "", {
+    skip: !id,
+  });
+  const dispatch = useAppDispatch();
   const [markRead, { isLoading: marking }] = useMarkReadMutation();
-  const [toggleBookmark, { isLoading: bookmarking }] = useToggleBookmarkMutation();
+  const [toggleBookmark, { isLoading: bookmarking }] =
+    useToggleBookmarkMutation();
   const [deleteArticle, { isLoading: deleting }] = useDeleteArticleMutation();
   const [resummarize, { isLoading: summarizing }] = useResummarizeMutation();
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const invalidateDashboard = () => {
+    void dispatch(
+      articlesApi.util.invalidateTags([
+        { type: "Articles", id: "LIST" },
+        { type: "UserStats", id: "me" },
+      ]),
+    );
+  };
 
   const handleDelete = async () => {
     if (!id) return;
     try {
       await deleteArticle(id).unwrap();
+      invalidateDashboard();
       toast.success("Article deleted");
       navigate("/");
     } catch (error) {
@@ -59,40 +94,76 @@ const ArticleDetail = () => {
       </button>
 
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50">{article.title}</h1>
-        <Badge variant="outline">{article.intents?.[0]?.phrase ?? "No intent"}</Badge>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50">
+          {article.title}
+        </h1>
+        <Badge variant="outline">
+          {article.intents?.[0]?.phrase ?? "No intent"}
+        </Badge>
       </div>
-      <p className="text-sm text-slate-500">Saved {formatDate(article.createdAt)}</p>
+      <p className="text-sm text-slate-500">
+        Saved {formatDate(article.createdAt)}
+      </p>
 
       <div className="grid gap-6 md:grid-cols-[280px,1fr]">
         <Card className="h-fit">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">Actions</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              Actions
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
             <Button
               variant="secondary"
-              onClick={() => toggleBookmark(article.id).catch(() => toast.error("Bookmark failed"))}
+              onClick={async () => {
+                try {
+                  await toggleBookmark(article.id).unwrap();
+                  invalidateDashboard();
+                  toast.success("Bookmark updated");
+                } catch (error) {
+                  toast.error("Bookmark failed");
+                }
+              }}
               disabled={bookmarking}
               aria-label="Toggle bookmark"
             >
-              <Bookmark className="mr-2 h-4 w-4" /> {article.isBookmarked ? "Remove bookmark" : "Bookmark"}
+              <Bookmark className="mr-2 h-4 w-4" />{" "}
+              {article.isBookmarked ? "Remove bookmark" : "Bookmark"}
             </Button>
             <Button
               variant="secondary"
-              onClick={() => markRead(article.id).catch(() => toast.error("Update failed"))}
+              onClick={async () => {
+                try {
+                  await markRead(article.id).unwrap();
+                  invalidateDashboard();
+                  toast.success(article.isRead ? "Marked as unread" : "Marked as read");
+                } catch (error) {
+                  toast.error("Update failed");
+                }
+              }}
               disabled={marking}
               aria-label="Toggle read"
             >
-              <CheckCircle className="mr-2 h-4 w-4" /> {article.isRead ? "Mark unread" : "Mark as read"}
+              <CheckCircle className="mr-2 h-4 w-4" />{" "}
+              {article.isRead ? "Mark unread" : "Mark as read"}
             </Button>
             <Button
               variant="secondary"
-              onClick={() => resummarize(article.id).catch(() => toast.error("Resummarize failed"))}
+              onClick={async () => {
+                try {
+                  await resummarize(article.id).unwrap();
+                  invalidateDashboard();
+                  toast.success("Summary refreshed");
+                } catch (error) {
+                  toast.error("Resummarize failed");
+                }
+              }}
               disabled={summarizing}
               aria-label="Resummarize"
             >
-              <RefreshCw className={`mr-2 h-4 w-4 ${summarizing ? "animate-spin" : ""}`} />
+              <RefreshCw
+                className={`mr-2 h-4 w-4 ${summarizing ? "animate-spin" : ""}`}
+              />
               {summarizing ? "Resummarizing" : "Resummarize"}
             </Button>
             <Button
@@ -128,8 +199,10 @@ const ArticleDetail = () => {
 
         <Card className="card-hover">
           <CardContent className="space-y-6">
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">AI Summary</p>
+            <div className="p-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                AI Summary
+              </p>
               <p className="mt-3 text-lg leading-relaxed text-slate-800 dark:text-slate-100">
                 {article.summary}
               </p>

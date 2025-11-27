@@ -35,8 +35,15 @@ export class ArticlesController {
   @Patch(':id/read')
   async markAsRead(@Param('id') id: string, @Req() req: Express.Request) {
     const userId = req.user.sub;
-    await this.articlesService.markArticleAsRead(id, userId);
-    return { message: 'Article marked as read' };
+    const updated = await this.articlesService.toggleReadState(id, userId);
+    return { message: 'Article read state updated', article: updated };
+  }
+
+  @Patch(':id/bookmark')
+  async toggleBookmark(@Param('id') id: string, @Req() req: Express.Request) {
+    const userId = req.user.sub;
+    const updated = await this.articlesService.toggleBookmark(id, userId);
+    return { message: 'Bookmark state updated', article: updated };
   }
 
   @Get(':id')
