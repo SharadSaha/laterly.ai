@@ -130,13 +130,8 @@ const ArticleDetail = () => {
           <CardContent className="space-y-6">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">AI Summary</p>
-              <p className="mt-2 text-lg leading-relaxed text-slate-800 dark:text-slate-100">{article.summary}</p>
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Original excerpt</p>
-              <p className="mt-2 text-slate-700 dark:text-slate-200 leading-relaxed">
-                {article.contentSnippet?.slice(0, 400)}
-                {article.contentSnippet?.length > 400 && "…"}
+              <p className="mt-3 text-lg leading-relaxed text-slate-800 dark:text-slate-100">
+                {article.summary}
               </p>
             </div>
           </CardContent>

@@ -39,16 +39,31 @@ export class ArticlesController {
     return { message: 'Article marked as read' };
   }
 
+  @Get(':id')
+  async getOne(@Param('id') id: string, @Req() req: Express.Request) {
+    const userId = req.user.sub;
+    return this.articlesService.getArticleById(id, userId);
+  }
+
   @Get()
   filterArticles(
     @Query('topic_ids') topicIdsRaw: string,
     @Query('intent') intentRaw: string,
+    @Query('skip') skipRaw: string,
+    @Query('take') takeRaw: string,
     @Req() req: Express.Request,
   ) {
     const userId = req.user.sub;
 
     const topicIds = topicIdsRaw?.split(',').filter(Boolean);
+    const skip = Number(skipRaw) || 0;
+    const take = Number(takeRaw) || 20;
 
-    return this.articlesService.getArticles(userId, topicIds, intentRaw);
+    return this.articlesService.getArticles(userId, {
+      topicIds,
+      rawIntent: intentRaw,
+      skip,
+      take,
+    });
   }
 }

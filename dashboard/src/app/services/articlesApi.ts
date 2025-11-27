@@ -62,8 +62,8 @@ export const articlesApi = createApi({
       { skip?: number; take?: number } | void
     >({
       query: (params) => {
-        const skip = params?.skip ?? 0;
-        const take = params?.take ?? PAGE_SIZE;
+        const skip = params ? params?.skip : 0;
+        const take = params ? params?.take : PAGE_SIZE;
         return `/api/articles${buildQueryString({ skip, take })}`;
       },
       providesTags: (result) => [

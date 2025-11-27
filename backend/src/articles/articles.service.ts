@@ -95,7 +95,28 @@ export class ArticleService {
     });
   }
 
-  async getArticles(userId: string, topicIds?: string[], rawIntent?: string) {
+  async getArticleById(articleId: string, userId: string) {
+    const article = await this.prisma.article.findFirst({
+      where: { id: articleId, userId },
+      include: { topics: true, intents: true },
+    });
+
+    if (!article) {
+      throw new NotFoundException('Article not found or access denied');
+    }
+
+    return article;
+  }
+
+  async getArticles(
+    userId: string,
+    {
+      topicIds,
+      rawIntent,
+      skip = 0,
+      take = 20,
+    }: { topicIds?: string[]; rawIntent?: string; skip?: number; take?: number },
+  ) {
     const where: Prisma.ArticleWhereInput = {
       userId,
     };
@@ -123,7 +144,9 @@ export class ArticleService {
 
       const intentIds = matchedIntents.map((i) => i.id);
 
-      if (intentIds.length === 0) return [];
+      if (intentIds.length === 0) {
+        return { items: [], total: 0 };
+      }
 
       where.intents = {
         some: {
@@ -132,15 +155,22 @@ export class ArticleService {
       };
     }
 
-    return this.prisma.article.findMany({
-      where,
-      include: {
-        topics: true,
-        intents: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+    const [items, total] = await Promise.all([
+      this.prisma.article.findMany({
+        where,
+        include: {
+          topics: true,
+          intents: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip,
+        take,
+      }),
+      this.prisma.article.count({ where }),
+    ]);
+
+    return { items, total };
   }
 }
