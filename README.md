@@ -1,106 +1,127 @@
 # 🕒 Laterly.ai — Save Smarter, Read with Purpose
 
-> Your personal AI-powered reading assistant — save articles with intent, get summaries, and organize your reading life.
+> Your personal AI-powered reading assistant — save with intent, get summaries, and organize your reading life.
+
+---
+
+## 🔗 Live
+
+- **Dashboard:** https://laterly-ai.vercel.app/ (highlight)
+- **API Base:** https://laterly-ai.onrender.com/api/
 
 ---
 
 ## 🚀 What is Laterly.ai?
 
-**Laterly.ai** is a productivity-focused web tool + Chrome extension that lets users:
+Laterly.ai combines a Chrome extension and a web dashboard to help you capture articles with context, summarize them, and resurface what matters.
 
-- 🔖 Save any article from the web with a single click
-- 💬 Optionally add _"Why am I saving this?"_ intent
-- 🧠 View AI-generated summaries of saved articles
-- 📬 Get digest emails & smart search from your dashboard
+- 🔖 Save any page from the extension or manually from the dashboard
+- 💬 Add “why am I saving this?” intent to keep context
+- 🧠 AI-generated summaries + topic tagging
+- 🔎 Search by intent, title, topic, or text
+- 📊 Dashboard to review, bookmark, and mark as read
 
-All powered by OpenAI, FastAPI, React, Redux Toolkit, and RTK Query.
+---
+
+## ✨ Feature Highlights
+
+- **Chrome Extension (MV3):** one-click save with optional intent; auto-grabs page content.
+- **Manual Save (Dashboard):** enter URL, title, intent, and content without the extension.
+- **AI Summaries & Topics:** content is sent to AI for summary, topic detection, and intent normalization.
+- **Smart Search:** filter by intent or topics; view trending intents.
+- **Read/Bookmark States:** manage your queue from the dashboard.
 
 ---
 
 ## 🧩 Tech Stack
 
-| Layer      | Stack                                  |
-| ---------- | -------------------------------------- |
-| Frontend   | React, TypeScript, Tailwind, shadcn/ui |
-| Extension  | Vite, React, Manifest v3               |
-| State Mgmt | Redux Toolkit, RTK Query               |
-| Backend    | Nest (TypeScript), OpenAI API          |
-| Storage    | PostgreSQL (via Prisma)                |
+| Layer      | Stack                                      |
+| ---------- | ------------------------------------------ |
+| Frontend   | React, TypeScript, Tailwind, shadcn/ui     |
+| Extension  | Vite + React, Manifest v3                  |
+| State Mgmt | Redux Toolkit, RTK Query                   |
+| Backend    | NestJS (TypeScript), OpenAI API (AI tasks) |
+| Database   | PostgreSQL via Prisma                      |
 
 ---
 
-## ✨ Features
+## 📦 Setup
 
-- 🧩 Chrome Extension to save pages with optional "intent"
-- 🤖 AI summaries (Gemini)
-- 🔎 Full-text search across saved articles and intents
-- 🏷️ Tagging + topic detection
-- 📨 Weekly digest email (planned)
-- 📊 Dashboard to manage, search, and explore saved content
-
----
-
-## 📦 Setup Instructions
-
-### 🧰 Prerequisites
+### Prerequisites
 
 - Node.js (v20 recommended)
-- NPM
-- Chrome (to load the extension)
+- npm
+- Chrome (for loading the extension)
 
-### 🛠️ Install all packages
+### Install dependencies
 
-\`\`\`bash
+```bash
+# extension
 cd extension && npm install
+
+# dashboard
 cd ../dashboard && npm install
-\`\`\`
 
-### ▶️ Run the Extension
+# backend
+cd ../backend && npm install
+```
 
-\`\`\`bash
+### Env
+
+- `extension/.env` uses `VITE_DASHBOARD_URL` and `VITE_BACKEND_URL`.
+- `dashboard/.env` expects `VITE_API_URL` pointing to the backend (e.g., `https://laterly-ai.onrender.com`).
+- `backend/.env` should include DB URL, JWT secret, and OpenAI creds (see sample in repo).
+
+### Run the Extension
+
+```bash
 cd extension
 npm run dev
-\`\`\`
+```
 
-Load the \`dist/\` folder in [chrome://extensions](chrome://extensions) as an unpacked extension.
+Load the built `dist/` folder in `chrome://extensions` as an unpacked extension (Manifest v3).
 
-### 🧭 Run the Dashboard
+### Run the Dashboard
 
-\`\`\`bash
+```bash
 cd dashboard
 npm run dev
-\`\`\`
+```
 
-Open [http://localhost:5173](http://localhost:5173)
+Open http://localhost:5173
+
+### Run the Backend
+
+```bash
+cd backend
+npm run start:dev
+```
+
+Backend serves under `/api` (e.g., http://localhost:3000/api).
 
 ---
 
 ## 🛣️ Roadmap
 
-- [x] Save article with intent via extension
-- [x] AI summarization
-- [x] Dashboard listing with smart search
+- [x] Save with intent via extension
+- [x] Manual save from dashboard
+- [x] AI summaries + topic detection
+- [x] Dashboard search + trending intents
 - [ ] Weekly digest emails
-- [ ] Topic-based exploration
-- [ ] Collaborative/shared reading lists
-
----
-
-## 💡 Inspiration
-
-> We all save articles for "later", but rarely return. Laterly helps you **remember _why_ you saved**, then turns that into action with **AI summaries, search, and intent recall**.
+- [ ] Topic-based exploration UX
+- [ ] Shared/collaborative reading lists
 
 ---
 
 ## 🙌 Contributing
 
-PRs are welcome! If you're passionate about productivity, AI, or reading — [open an issue](https://github.com/SharadSaha/laterly.ai/issues).
+PRs welcome! If you're passionate about productivity, AI, or reading — [open an issue](https://github.com/SharadSaha/laterly.ai/issues).
 
 ---
 
 ## 🧑‍💻 Author
 
-Built with ❤️ by [@SharadSaha](https://github.com/SharadSaha)
+Built by [@SharadSaha](https://github.com/SharadSaha)
 
 ---
 
