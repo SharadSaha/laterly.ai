@@ -110,6 +110,23 @@ export class ArticleService {
     });
   }
 
+  async resummarize(articleId: string, userId: string) {
+    const article = await this.prisma.article.findFirst({
+      where: { id: articleId, userId },
+    });
+
+    if (!article) {
+      throw new NotFoundException('Article not found or access denied');
+    }
+
+    const summary = await this.aiService.summarizeArticle(article.content);
+
+    return this.prisma.article.update({
+      where: { id: articleId },
+      data: { summary },
+    });
+  }
+
   async getArticleById(articleId: string, userId: string) {
     const article = await this.prisma.article.findFirst({
       where: { id: articleId, userId },

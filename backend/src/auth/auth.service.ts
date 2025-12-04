@@ -26,12 +26,22 @@ export class AuthService {
       if (!isMatch) throw new UnauthorizedException('Invalid credentials');
     }
 
-    return this.signToken(user.id, user.email);
+    const access_token = this.signToken(user.id, user.email);
+    const profile = await this.getProfile(user.id);
+
+    return {
+      access_token,
+      token: access_token,
+      id: profile.id,
+      email: profile.email,
+      name: profile.name,
+      article_count: profile.stats.total,
+    };
   }
 
   signToken(userId: string, email: string) {
     const payload = { sub: userId, email };
-    return { access_token: this.jwt.sign(payload) };
+    return this.jwt.sign(payload);
   }
 
   async getProfile(userId: string) {

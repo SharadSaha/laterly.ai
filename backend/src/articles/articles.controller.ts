@@ -52,6 +52,12 @@ export class ArticlesController {
     return this.articlesService.getArticleById(id, userId);
   }
 
+  @Post(':id/resummarize')
+  async resummarize(@Param('id') id: string, @Req() req: Express.Request) {
+    const userId = req.user.sub;
+    return this.articlesService.resummarize(id, userId);
+  }
+
   @Get()
   filterArticles(
     @Query('topic_ids') topicIdsRaw: string,
