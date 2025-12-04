@@ -24,26 +24,44 @@ const Auth = ({
   };
 
   return (
-    <div className="auth-container">
-      <h2>🔐 Welcome to Laterly.ai</h2>
-      <input
-        type="email"
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Enter your password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+    <div className="auth-shell">
+      <div className="auth-hero">
+        <div className="auth-glow" />
+        <div className="auth-badge">Laterly.ai</div>
+        <h1>Sign in to capture your reads</h1>
+        <p>
+          Same cozy vibe as saving with intent—just log in and start dropping
+          links.
+        </p>
+      </div>
 
-      <button onClick={handleLogin}>
-        {isLoginUserLoading ? "Logging in..." : "Log In"}
-      </button>
-      <div className="footer-link">
-        Not registered yet? Just enter your email to continue.
+      <div className="auth-card">
+        <label className="auth-label">Email</label>
+        <input
+          type="email"
+          placeholder="example@gmail.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <label className="auth-label">Password</label>
+        <input
+          type="password"
+          placeholder="••••••••"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button
+          className="auth-button"
+          onClick={handleLogin}
+          disabled={isLoginUserLoading}
+        >
+          {isLoginUserLoading ? "Logging in..." : "Log in"}
+        </button>
+        <p className="auth-footnote">
+          Not registered? Enter your email to continue.
+        </p>
       </div>
     </div>
   );

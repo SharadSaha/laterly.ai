@@ -11,6 +11,42 @@ const SaveIntentForm = () => {
 
   const [createArticle, { isLoading }] = articlesApi.useCreateArticleMutation();
 
+  const getPageContent = async (tab: chrome.tabs.Tab) => {
+    if (!tab.id || !tab.url) return "";
+    try {
+      const results = await chrome.scripting.executeScript({
+        target: { tabId: tab.id, allFrames: true },
+        func: () =>
+          document.body?.innerText || document.documentElement?.innerText || "",
+      });
+
+      const text =
+        results
+          ?.map((res) =>
+            typeof res.result === "string" ? res.result.trim() : ""
+          )
+          .filter(Boolean)
+          .sort((a, b) => b.length - a.length)[0] || "";
+
+      if (text) return text;
+    } catch (error) {
+      console.warn("Reading content via scripting failed", error);
+    }
+
+    try {
+      const response = await fetch(tab.url);
+      if (response.ok) {
+        const html = await response.text();
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        return doc.body?.innerText?.trim() || "";
+      }
+    } catch (error) {
+      console.warn("Fetching page content failed", error);
+    }
+
+    return "";
+  };
+
   const handleSave = async () => {
     if (isLoading) return;
     setStatus("");
@@ -23,32 +59,24 @@ const SaveIntentForm = () => {
       return;
     }
 
-    chrome.scripting.executeScript(
-      {
-        target: { tabId: tab.id },
-        func: () => document.body.innerText,
-      },
-      async (results) => {
-        const content = results?.[0]?.result;
-        if (!content) {
-          setStatus("No content detected on this page.");
-          return;
-        }
-        const payload = {
-          url: tab.url,
-          title: tab.title || "",
-          content,
-          intent,
-        };
-        try {
-          await createArticle(payload).unwrap();
-          setSaved(true);
-          setStatus("Saved to Laterly");
-        } catch (error) {
-          setStatus("Save failed. Please try again.");
-        }
-      }
-    );
+    const content = await getPageContent(tab);
+    if (!content) {
+      setStatus("Couldn't detect readable content on this page.");
+      return;
+    }
+
+    const payload = {
+      url: tab.url,
+      title: tab.title || "",
+      content,
+      intent,
+    };
+    createArticle(payload)
+      .unwrap()
+      .then(() => {
+        setSaved(true);
+        setStatus("Saved to Laterly");
+      });
   };
 
   const handleNavigateToDashboard = (
@@ -79,7 +107,11 @@ const SaveIntentForm = () => {
               onChange={(e) => setIntent(e.target.value)}
             />
           </div>
-          <button className="popup-button" onClick={handleSave} disabled={isLoading}>
+          <button
+            className="popup-button"
+            onClick={handleSave}
+            disabled={isLoading}
+          >
             {isLoading ? "Saving…" : "Save to Laterly"}
           </button>
         </>
@@ -88,7 +120,10 @@ const SaveIntentForm = () => {
           <div className="check">✓</div>
           <div>
             <h3>Saved to Laterly</h3>
-            <p>Your article is queued for AI summary. Peek at the dashboard to see it.</p>
+            <p>
+              Your article is queued for AI summary. Peek at the dashboard to
+              see it.
+            </p>
           </div>
         </div>
       )}

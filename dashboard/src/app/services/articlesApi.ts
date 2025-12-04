@@ -119,6 +119,20 @@ export const articlesApi = createApi({
     getTrendingIntents: builder.query<Intent[], void>({
       query: () => "/api/intents/trending",
     }),
+    createArticle: builder.mutation<
+      Article,
+      { url: string; title: string; intent: string; content: string }
+    >({
+      query: (payload) => ({
+        url: "/api/articles",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: [
+        { type: "Articles", id: "LIST" },
+        { type: "UserStats", id: "me" },
+      ],
+    }),
     deleteArticle: builder.mutation<void, string>({
       query: (id) => ({ url: `/api/articles/${id}`, method: "DELETE" }),
       invalidatesTags: (result, error, id) => [
@@ -258,6 +272,7 @@ export const {
   useFilterArticlesQuery,
   useGetTopicsQuery,
   useGetTrendingIntentsQuery,
+  useCreateArticleMutation,
   useDeleteArticleMutation,
   useMarkReadMutation,
   useToggleBookmarkMutation,

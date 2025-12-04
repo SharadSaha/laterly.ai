@@ -5,6 +5,17 @@ export const baseQuery = () =>
   fetchBaseQuery({
     baseUrl,
     credentials: "include",
+    // Be tolerant of non-JSON bodies from the backend (e.g., 201 with empty body).
+    responseHandler: async (response) => {
+      const text = await response.text();
+      if (!text) return null;
+      try {
+        return JSON.parse(text);
+      } catch (error) {
+        console.warn("Falling back to plain text response", error);
+        return text;
+      }
+    },
     prepareHeaders: async (headers) => {
       let token = localStorage.getItem("token");
       const chromeToken: string | undefined = await new Promise((resolve) => {

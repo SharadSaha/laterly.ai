@@ -32,7 +32,7 @@ All powered by OpenAI, FastAPI, React, Redux Toolkit, and RTK Query.
 ## ✨ Features
 
 - 🧩 Chrome Extension to save pages with optional "intent"
-- 🤖 AI summaries (OpenAI)
+- 🤖 AI summaries (Gemini)
 - 🔎 Full-text search across saved articles and intents
 - 🏷️ Tagging + topic detection
 - 📨 Weekly digest email (planned)
